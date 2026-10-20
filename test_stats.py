@@ -151,3 +151,15 @@ def test_zero_price(tmp_path):
 
     with pytest.raises(ValueError, match="Price cannot be negative"):
         load_orders(str(csv_file))
+
+def test_missing_column(tmp_path):
+    csv_file = tmp_path / "orders.csv"
+
+    csv_file.write_text(
+        "order_id,date,customer,product,quantity,unit_price\n"
+        "1001,2026-01-14,Sara,Scarf,2,35.0\n",
+        encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="Missing required columns"):
+        load_orders(csv_file)

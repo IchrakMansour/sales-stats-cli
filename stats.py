@@ -5,8 +5,26 @@ from datetime import datetime
 def load_orders(file_path):
     with open(file_path, "r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
-        orders = list(reader)
+        
+        required_columns = {
+            "order_id", 
+            "date",
+            "customer", 
+            "product", 
+            "category", 
+            "quantity", 
+            "unit_price"
+        }
 
+        if reader.fieldnames is None:
+            raise ValueError("CSV file is empty or has no header")
+
+        missing_columns = required_columns - set(reader.fieldnames)
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(sorted(missing_columns))}")
+
+        orders = list(reader)
+        
     for order in orders:
         try:
             quantity = int(order["quantity"])
