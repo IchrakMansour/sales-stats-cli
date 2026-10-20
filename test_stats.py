@@ -189,3 +189,16 @@ def test_missing_customer(tmp_path):
 
     with pytest.raises(ValueError, match="Missing value for 'customer'"):
         load_orders(csv_file)
+
+
+def test_nan_price(tmp_path):
+    csv_file = tmp_path / "orders.csv"
+
+    csv_file.write_text(
+        "order_id,date,customer,product,category,quantity,unit_price\n"
+        "1001,2026-01-14,Sara,Scarf,Accessories,2,nan\n",
+        encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="finite number"):
+        load_orders(csv_file)

@@ -1,4 +1,5 @@
 import csv
+import math
 from collections import defaultdict
 from datetime import datetime
 
@@ -61,11 +62,15 @@ def load_orders(file_path):
         except (ValueError, TypeError):  
             raise ValueError(f"Invalid quantity or unit_price in order: {order.get('order_id')}")
 
+        if not math.isfinite(price):
+            raise ValueError(f"Price must be a finite number in order {order_id}")
+        
         if quantity <= 0 :
             raise ValueError( f"Quantity must be positive in order {order.get('order_id')}")
 
         if price < 0 :
             raise  ValueError(f"Price cannot be negative in order {order.get('order_id')}")
+        
     return orders
 
 def count_orders(orders):
