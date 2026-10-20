@@ -163,3 +163,29 @@ def test_missing_column(tmp_path):
 
     with pytest.raises(ValueError, match="Missing required columns"):
         load_orders(csv_file)
+
+
+def test_invalid_date(tmp_path):
+    csv_file = tmp_path / "orders.csv"
+
+    csv_file.write_text(
+        "order_id,date,customer,product,category,quantity,unit_price\n"
+        "1001,2026-99-45,Sara,Scarf,Accessories,2,35.0\n",
+        encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="Invalid date"):
+        load_orders(csv_file)
+
+
+def test_missing_customer(tmp_path):
+    csv_file = tmp_path / "orders.csv"
+
+    csv_file.write_text(
+        "order_id,date,customer,product,category,quantity,unit_price\n"
+        "1001,2026-01-14,,Scarf,Accessories,2,35.0\n",
+        encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="Missing value for 'customer'"):
+        load_orders(csv_file)

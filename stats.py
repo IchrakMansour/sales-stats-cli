@@ -24,8 +24,37 @@ def load_orders(file_path):
             raise ValueError(f"Missing required columns: {', '.join(sorted(missing_columns))}")
 
         orders = list(reader)
-        
+
     for order in orders:
+        order_id = order.get("order_id", "").strip()
+
+        # 1. Check required text fields
+        text_fields = [
+            "order_id",
+            "date",
+            "customer",
+            "product",
+            "category",
+            "quantity",
+            "unit_price",
+        ]
+
+        for field in text_fields:
+            if not order.get(field) or not order[field].strip():
+                raise ValueError(
+                    f"Missing value for '{field}' in order {order_id or 'unknown'}"
+                )
+
+        # 2. Check date format and validity
+        try:
+            datetime.strptime(order["date"], "%Y-%m-%d")
+        except ValueError:
+            raise ValueError(
+                f"Invalid date in order {order_id}: {order['date']}. "
+                "Expected format: YYYY-MM-DD"
+            )
+
+        # 3. Check numeric fields
         try:
             quantity = int(order["quantity"])
             price = float(order["unit_price"])
